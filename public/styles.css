@@ -17,6 +17,8 @@ h1 {
     text-align: center;
     background-color: #007580;
     padding: 10px;
+    font-size: 3rem;
+    margin-left: 50px;
 }
 
 main {
@@ -26,11 +28,13 @@ main {
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+    margin-left: 50px;
 }
 
 main h3 {
     width: 100%;
     text-align: center;
+    font-size: 2rem;
 }
 
 #start-button {
@@ -53,10 +57,25 @@ main h3 {
 }
 
 .flag {
-    width: 50px;
+    width: 100px;
     margin: 5px;
 }
 
 .flag:hover {
-    border: 3px solid white;
+    border: 6px solid white;
+}
+
+#player-points {
+    position: absolute;
+    left: 0;
+    height: 100vh;
+    width: 50px;
+    background-color: #282846;
+}
+
+.points {
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: 2rem;
 }

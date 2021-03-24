@@ -21,6 +21,21 @@ h1 {
     margin-left: 50px;
 }
 
+.h4-container {
+    transform: translateY(40vh);
+}
+
+h4 {
+    text-align: center;
+    background-color: #d8ebe4;
+    padding: 10px;
+    font-size: 2rem;
+}
+
+#room-url {
+    font-family: cursive;
+}
+
 main {
     flex-grow: 1;
     position: relative;

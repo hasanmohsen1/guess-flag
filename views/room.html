@@ -13,11 +13,16 @@
         <title>COUNTRIES QUIZ</title>
     </head>
     <body>
-        <h1>🏴‍☠️ 🌍 Welcome to the FLAG QUIZ 🌎 🏳</h1>
-        <main>
-            <form action="/create" method="POST">
-                <input type="submit" value="CREATE ROOM" />
-            </form>
-        </main>
+        <h1>🏴‍☠️ 🌍 CHECK YOUR KNOWLEDGE ! PICK THE RIGHT FLAG ? 🌎 🏳</h1>
+
+        <button id="start-button">CLICK & START !!!</button>
+        <div class="h4-container">
+            <h4>Wait for players or play SOLO ???</h4>
+            <h4>Send this url to friends: <em id="room-url"></em></h4>
+        </div>
+        <main></main>
+        <section id="player-points"></section>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/script.js"></script>
     </body>
 </html>

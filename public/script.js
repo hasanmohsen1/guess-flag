@@ -1,18 +1,28 @@
 (function () {
+    const room = location.pathname.split("/")[2];
+    const h4 = document.querySelector(".h4-container");
+    document.querySelector("#room-url").innerHTML = location.href;
     const main = document.querySelector("main");
     const startButton = document.querySelector("#start-button");
+    const pointsSection = document.getElementById("player-points");
     const socket = io.connect();
+    let allFlags = null;
+    let timeoutId = null;
+    const country = document.createElement("h3");
+    let correctFlag = null;
+    let clicked = false;
 
-    socket.emit("player-online");
-
-    socket.on("flags", (data) => {
-        data.forEach((element, index) => {
-            main.innerHTML += `<img src="${element.flag}" class="flag" id="flag${index}"/>`;
-        });
-        startButton.innerHTML = "BE PREPARED!";
-    });
+    socket.emit("player-online", room);
 
     socket.on("send-player-emoji", (data) => {
+        startButton.addEventListener(
+            "click",
+            () => {
+                startButton.innerHTML = "BE PREPARED!";
+                socket.emit("start-game", room);
+            },
+            { once: true }
+        );
         document.body.style.cursor = startButton.style.cursor = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='60' viewport='0 0 100 100' style='fill:black;font-size:30px;'><text y='50%'>${data.emoji}</text></svg>") 16 0, auto`;
         document.addEventListener("mousemove", function (e) {
             socket.emit("player-mouse-position", {
@@ -39,38 +49,64 @@
         emojiDiv.style.top = data.y + "px";
     });
 
-    const country = document.createElement("h3");
-    let correctFlag = null;
+    const showCorrectFlag = () => {
+        const flagItem = document.getElementById(correctFlag);
+        if (!flagItem) {
+            return;
+        }
+        flagItem.style.border = "10px solid #282846";
+
+        setTimeout(() => {
+            flagItem.style.border = "";
+        }, 1500);
+    };
+
+    document.addEventListener("click", (event) => {
+        if (clicked || !event.target.classList.contains("flag")) {
+            return;
+        }
+
+        clicked = true;
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        if (event.target.id == correctFlag) {
+            socket.emit("answer-correct");
+        } else {
+            showCorrectFlag();
+        }
+        socket.emit("next-question");
+    });
 
     socket.on("question", (data) => {
         console.log(data);
-        startButton.style.display = "none";
+        if (data.flags) {
+            allFlags = JSON.parse(data.flags);
+            startButton.style.display = "none";
+            h4.style.display = "none";
+            allFlags.forEach((element, index) => {
+                main.innerHTML += `<img src="${element.flag}" class="flag" id="flag${index}"/>`;
+            });
+        }
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        clicked = false;
         main.prepend(country);
-        country.innerHTML = data.name;
-        document.addEventListener(
-            "click",
-            (event) => {
-                correctFlag = data.index;
-                if (event.target.id == data.index) {
-                    socket.emit("answered", "win");
-                } else {
-                    document.getElementById(data.index).style.border =
-                        "10px solid #b6fd8e";
-                    setTimeout(() => {
-                        document.getElementById(data.index).style.border = "";
-                    }, 1500);
-                    socket.emit("answered", "lose");
-                }
-            },
-            { once: true }
-        );
+        country.innerHTML = allFlags[data.questionFlag].name;
+        correctFlag = data.index;
+
+        timeoutId = setTimeout(() => {
+            clicked = true;
+            showCorrectFlag();
+            socket.emit("next-question");
+        }, 10000);
     });
 
     socket.on("send-points", () => {
         socket.emit("send-points");
     });
 
-    const pointsSection = document.getElementById("player-points");
     socket.on("points", (data) => {
         const pointEmojiElement = document.getElementById(
             `points-${data.socketId}`
@@ -80,13 +116,14 @@
             return;
         }
         const pointElem = document.createElement("span");
-        pointElem.classList.add("points");
         pointElem.id = `points-${data.socketId}`;
+        pointElem.classList.add("points");
         pointElem.innerHTML = `${data.emoji}<p>${data.points}</p>`;
         pointsSection.appendChild(pointElem);
     });
 
     socket.on("winner", (data) => {
+        console.log(data);
         country.innerHTML = "GOOD JOB: ";
         if (data.length) {
             data.forEach((item) => (country.innerHTML += item));
@@ -104,5 +141,9 @@
         if (pointEmojiElement) {
             pointsSection.removeChild(pointEmojiElement);
         }
+    });
+
+    socket.on("disconnect", () => {
+        window.location.replace("/");
     });
 })();

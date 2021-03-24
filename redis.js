@@ -1,5 +1,5 @@
 const redis = require("redis");
-const { pomisify, promisify } = require("util");
+const { promisify } = require("util");
 
 const client = redis.createClient({
     host: "localhost",
@@ -21,3 +21,5 @@ module.exports.HMGET = promisify(client.HMGET).bind(client);
 module.exports.HEXISTS = promisify(client.HEXISTS).bind(client);
 module.exports.LPUSH = promisify(client.LPUSH).bind(client);
 module.exports.LRANGE = promisify(client.LRANGE).bind(client);
+module.exports.EXPIRE = promisify(client.EXPIRE).bind(client);
+module.exports.EXISTS = promisify(client.EXISTS).bind(client);

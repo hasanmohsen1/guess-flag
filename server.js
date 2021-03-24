@@ -19,8 +19,24 @@ app.get("/", (request, response) => {
     response.sendFile(__dirname + "/views/index.html");
 });
 
-app.post("/create", (req, res) => {
+app.post("/create", async (req, res) => {
     const roomString = cryptoRandomString(8);
+
+    const randomFlags = JSON.stringify(
+        flagsArr.sort(() => Math.random() - 0.5).slice(0, 48)
+    );
+    const questionFlag = Math.floor(Math.random() * 48);
+    await redis.HMSET(
+        roomString,
+        "flags",
+        randomFlags,
+        "question",
+        questionFlag
+    );
+    await redis.EXPIRE(roomString, 320);
+
+    await redis.SET(roomString + "counter", 0);
+    await redis.EXPIRE(roomString + "counter", 320);
     res.redirect(`/room/${roomString}`);
 });
 
@@ -38,11 +54,20 @@ io.on("connection", (socket) => {
         room: null,
     };
 
-    socket.on("player-online", (room) => {
+    socket.on("player-online", async (room) => {
+        const checkRoomExistence = await redis.EXISTS(room);
+        if (!checkRoomExistence) {
+            return socket.disconnect();
+        }
         socket.join(room);
         if (io.sockets.adapter.rooms.get(room).size > 10) {
             socket.leave(room);
             return socket.disconnect();
+        }
+
+        if (await redis.HGET(room, "started")) {
+            const flags = redis.HGET(room, "flags");
+            socket.emit("new-player-arrived-later", await flags);
         }
 
         playerData.room = room;
@@ -51,43 +76,26 @@ io.on("connection", (socket) => {
     });
 
     socket.on("start-game", async (data) => {
-        const checkRoomExistence = await redis.HEXISTS(
-            playerData.room,
-            "started"
+        await redis.HSET(data, "started", 1);
+
+        const [randomFlags, questionFlag] = await redis.HMGET(
+            data,
+            "flags",
+            "question"
         );
-        if (!checkRoomExistence) {
-            await redis.HSET(playerData.room, ["started", 1]);
-            const randomFlags = JSON.stringify(
-                flagsArr.sort(() => Math.random() - 0.5).slice(0, 48)
-            );
-            const questionFlag = Math.floor(Math.random() * 48);
-            await redis.HMSET(
-                playerData.room,
-                "flags",
-                randomFlags,
-                "question",
-                questionFlag
-            );
 
-            await redis.SET(playerData.room + "counter", 0);
-
-            io.to(data).emit("question", {
-                flags: randomFlags,
-                questionFlag,
-                index: "flag" + questionFlag,
-            });
-        }
+        io.to(data).emit("question", {
+            flags: randomFlags,
+            questionFlag,
+            index: "flag" + questionFlag,
+        });
     });
 
     socket.on("disconnect", () => {
         if (!playerData.emoji) {
             return;
         }
-        console.log(
-            `disconnected, room ${
-                io.sockets.adapter.rooms.get(playerData.room).size
-            }`
-        );
+        console.log(io.sockets.adapter.rooms);
         socket.to(playerData.room).emit("socket-left", socket.id);
     });
 
@@ -107,13 +115,13 @@ io.on("connection", (socket) => {
     });
 
     socket.on("next-question", async () => {
-        console.log("next", socket.id);
         await redis.INCR(playerData.room + "counter");
-
+        const counter = redis.GET(playerData.room + "counter");
         if (
-            (await redis.GET(playerData.room + "counter")) >=
+            (await counter) >=
             io.sockets.adapter.rooms.get(playerData.room).size
         ) {
+            console.log("next-round", socket.id);
             await redis.SET(playerData.room + "counter", 0);
             const winners = await redis.LRANGE(
                 playerData.room + "winners",

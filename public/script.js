@@ -1,16 +1,28 @@
 (function () {
     const room = location.pathname.split("/")[2];
+
     const h4 = document.querySelector(".h4-container");
-    document.querySelector("#room-url").innerHTML = location.href;
+    const roomUrlElem = document.getElementById("room-url");
     const main = document.querySelector("main");
     const startButton = document.querySelector("#start-button");
     const pointsSection = document.getElementById("player-points");
+    const country = document.createElement("h3");
+
     const socket = io.connect();
+
     let allFlags = null;
     let timeoutId = null;
-    const country = document.createElement("h3");
     let correctFlag = null;
     let clicked = false;
+
+    roomUrlElem.innerHTML = location.href;
+    roomUrlElem.addEventListener("click", () => {
+        roomUrlElem.select();
+        roomUrlElem.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+
+        h4.children[0].innerHTML = "You've copied the link!";
+    });
 
     socket.emit("player-online", room);
 
@@ -61,7 +73,7 @@
         }, 1500);
     };
 
-    document.addEventListener("click", (event) => {
+    main.addEventListener("click", (event) => {
         if (clicked || !event.target.classList.contains("flag")) {
             return;
         }
@@ -84,6 +96,7 @@
             allFlags = JSON.parse(data.flags);
             startButton.style.display = "none";
             h4.style.display = "none";
+            main.innerHTML = "";
             allFlags.forEach((element, index) => {
                 main.innerHTML += `<img src="${element.flag}" class="flag" id="flag${index}"/>`;
             });
@@ -101,6 +114,19 @@
             showCorrectFlag();
             socket.emit("next-question");
         }, 10000);
+    });
+
+    socket.on("new-player-arrived-later", (flags) => {
+        allFlags = JSON.parse(flags);
+        startButton.style.display = "none";
+        h4.style.display = "none";
+        main.innerHTML = "";
+        allFlags.forEach((element, index) => {
+            main.innerHTML += `<img src="${element.flag}" class="flag" id="flag${index}"/>`;
+        });
+        main.prepend(country);
+        country.innerHTML = "Please, WAIT FOR NEXT ROUND!";
+        socket.emit("next-question");
     });
 
     socket.on("send-points", () => {

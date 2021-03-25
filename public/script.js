@@ -6,12 +6,14 @@
     const main = document.querySelector("main");
     const startButton = document.querySelector("#start-button");
     const pointsSection = document.getElementById("player-points");
+    const timerCountdown = document.getElementById("timer");
     const country = document.createElement("h3");
 
     const socket = io.connect();
 
     let allFlags = null;
     let timeoutId = null;
+    let timeoutCountdownId = null;
     let correctFlag = null;
     let clicked = false;
 
@@ -73,6 +75,16 @@
         }, 1500);
     };
 
+    const countdown = (num = 10) => {
+        if (timeoutCountdownId) {
+            clearTimeout(timeoutCountdownId);
+        }
+        timerCountdown.textContent = num;
+        if (num > 0) {
+            timeoutCountdownId = setTimeout(countdown, 1000, --num);
+        }
+    };
+
     main.addEventListener("click", (event) => {
         if (clicked || !event.target.classList.contains("flag")) {
             return;
@@ -104,7 +116,11 @@
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
+        if (timeoutCountdownId) {
+            clearTimeout(timeoutCountdownId);
+        }
         clicked = false;
+        countdown();
         main.prepend(country);
         country.innerHTML = allFlags[data.questionFlag].name;
         correctFlag = data.index;
@@ -130,6 +146,10 @@
     });
 
     socket.on("send-points", () => {
+        if (timeoutCountdownId) {
+            clearTimeout(timeoutCountdownId);
+        }
+        timerCountdown.textContent = 0;
         socket.emit("send-points");
     });
 
@@ -149,13 +169,19 @@
     });
 
     socket.on("winner", (data) => {
-        console.log(data);
         country.innerHTML = "GOOD JOB: ";
         if (data.length) {
             data.forEach((item) => (country.innerHTML += item));
         } else {
             country.innerHTML = "No one knew it !!!";
         }
+    });
+
+    socket.on("end-game", () => {
+        pointsSection.style.width = "100vw";
+        const endH3 = document.createElement("h3");
+        endH3.innerHTML = `GAME OVER!  <a href="/">New game?</a>`;
+        pointsSection.prepend(endH3);
     });
 
     socket.on("socket-left", (data) => {

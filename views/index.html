@@ -13,10 +13,15 @@
         <title>COUNTRIES QUIZ</title>
     </head>
     <body>
-        <h1>🏴‍☠️ 🌍 Welcome to the FLAG QUIZ 🌎 🏳</h1>
+        <h1 id="welcome">🏴‍☠️ 🌍 Welcome to the FLAG QUIZ 🌎 🏳</h1>
         <main>
             <form action="/create" method="POST">
-                <input type="submit" value="CREATE ROOM" />
+                <label for="create"
+                    >Play this game with friends or alone. Just click the
+                    "Create Room"-button and you will be directed to a private
+                    game room!</label
+                >
+                <input id="create" type="submit" value="CREATE ROOM" />
             </form>
         </main>
     </body>

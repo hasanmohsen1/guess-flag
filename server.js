@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("start-game", async (data) => {
-        await redis.HSET(data, "started", 1);
+        await redis.HMSET(data, "started", 1, "time", Date.now());
 
         const [randomFlags, questionFlag] = await redis.HMGET(
             data,
@@ -95,7 +95,6 @@ io.on("connection", (socket) => {
         if (!playerData.emoji) {
             return;
         }
-        console.log(io.sockets.adapter.rooms);
         socket.to(playerData.room).emit("socket-left", socket.id);
     });
 
@@ -133,9 +132,12 @@ io.on("connection", (socket) => {
             io.to(playerData.room).emit("winner", winners);
             io.to(playerData.room).emit("send-points");
 
+            const timeStarted = await redis.HGET(playerData.room, "time");
+            if ((Date.now() - timeStarted) / 1000 >= 30) {
+                io.to(playerData.room).emit("end-game");
+                return;
+            }
             const questionFlag = Math.floor(Math.random() * 48);
-
-            await redis.HSET(playerData.room, "question", questionFlag);
 
             setTimeout(() => {
                 io.to(playerData.room).emit("question", {

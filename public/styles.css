@@ -21,10 +21,45 @@ h1 {
     margin-left: 50px;
 }
 
+#welcome {
+    margin-left: 0;
+}
+
+form {
+    position: relative;
+}
+
+[type="submit"] {
+    display: block;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 2rem;
+    background-color: #d8ebe4;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid #282846;
+    z-index: 2;
+    cursor: pointer;
+}
+
+label {
+    display: inline-block;
+    font-size: 2.5rem;
+    text-align: center;
+    max-width: 500px;
+    margin-bottom: 10px;
+}
+
+header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .h4-container {
-    transform: translateY(40vh);
-    margin-left: 50px;
-    z-index: 1;
+    margin: 20vh 0 10vh 50px;
 }
 
 h4 {
@@ -46,6 +81,16 @@ h4 {
     font-size: 2rem;
 }
 
+#start-button {
+    align-self: center;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 2rem;
+    background-color: #d8ebe4;
+    border: 5px solid #282846;
+    margin-left: 50px;
+}
+
 main {
     flex-grow: 1;
     position: relative;
@@ -60,19 +105,6 @@ main h3 {
     width: 100%;
     text-align: center;
     font-size: 2rem;
-}
-
-#start-button {
-    padding: 10px;
-    border-radius: 10px;
-    font-size: 40px;
-    background-color: #d8ebe4;
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 5px solid #282846;
-    z-index: 2;
 }
 
 .emoji {
@@ -92,10 +124,25 @@ main h3 {
 
 #player-points {
     position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     left: 0;
-    height: 100vh;
+    min-height: 100vh;
     width: 50px;
     background-color: #282846;
+}
+
+#player-points h3 {
+    width: 100%;
+    text-align: center;
+    font-size: 3rem;
+    color: #fed049;
+    margin: 10px 0;
+}
+
+#player-points h3 a {
+    color: #007580;
 }
 
 .points {
@@ -103,4 +150,19 @@ main h3 {
     text-align: center;
     color: white;
     font-size: 2rem;
+}
+
+#timer {
+    position: absolute;
+    top: 10vh;
+    right: 50px;
+    color: #282846;
+    text-shadow: 0 0 10px #d8ebe4;
+    font-size: 4rem;
+    background-color: #fed049;
+    height: 4.2rem;
+    width: 4.2rem;
+    line-height: 4.2rem;
+    text-align: center;
+    border-radius: 50%;
 }

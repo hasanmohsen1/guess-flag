@@ -114,13 +114,12 @@ io.on("connection", (socket) => {
     });
 
     socket.on("next-question", async () => {
-        await redis.INCR(playerData.room + "counter");
+        redis.INCR(playerData.room + "counter");
         const counter = redis.GET(playerData.room + "counter");
         if (
             (await counter) >=
             io.sockets.adapter.rooms.get(playerData.room).size
         ) {
-            console.log("next-round", socket.id);
             await redis.SET(playerData.room + "counter", 0);
             const winners = await redis.LRANGE(
                 playerData.room + "winners",
@@ -133,7 +132,7 @@ io.on("connection", (socket) => {
             io.to(playerData.room).emit("send-points");
 
             const timeStarted = await redis.HGET(playerData.room, "time");
-            if ((Date.now() - timeStarted) / 1000 >= 30) {
+            if ((Date.now() - timeStarted) / 1000 >= 180) {
                 io.to(playerData.room).emit("end-game");
                 return;
             }

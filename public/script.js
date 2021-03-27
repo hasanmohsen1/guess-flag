@@ -68,10 +68,10 @@
         if (!flagItem) {
             return;
         }
-        flagItem.style.border = "10px solid #282846";
+        flagItem.classList.add("correct-flag");
 
         setTimeout(() => {
-            flagItem.style.border = "";
+            flagItem.classList.remove("correct-flag");
         }, 1500);
     };
 
@@ -103,7 +103,6 @@
     });
 
     socket.on("question", (data) => {
-        console.log(data);
         if (data.flags) {
             allFlags = JSON.parse(data.flags);
             startButton.style.display = "none";

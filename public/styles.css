@@ -122,6 +122,19 @@ main h3 {
     border: 6px solid white;
 }
 
+.correct-flag {
+    animation: blink 0.5s 5;
+}
+
+@keyframes blink {
+    0% {
+        filter: invert(0%);
+    }
+    100% {
+        filter: invert(100%);
+    }
+}
+
 #player-points {
     position: absolute;
     display: flex;

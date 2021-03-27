@@ -11,7 +11,7 @@ const app = express();
 
 const server = require("http").createServer(app);
 
-server.listen(8080, () => console.log("Server is running"));
+server.listen(process.env.PORT || 8080);
 
 app.use(express.static("public"));
 
@@ -23,9 +23,9 @@ app.post("/create", async (req, res) => {
     const roomString = cryptoRandomString(8);
 
     const randomFlags = JSON.stringify(
-        flagsArr.sort(() => Math.random() - 0.5).slice(0, 48)
+        flagsArr.sort(() => Math.random() - 0.5).slice(0, 36)
     );
-    const questionFlag = Math.floor(Math.random() * 48);
+    const questionFlag = Math.floor(Math.random() * 36);
     await redis.HMSET(
         roomString,
         "flags",
@@ -33,10 +33,10 @@ app.post("/create", async (req, res) => {
         "question",
         questionFlag
     );
-    await redis.EXPIRE(roomString, 320);
+    await redis.EXPIRE(roomString, 200);
 
     await redis.SET(roomString + "counter", 0);
-    await redis.EXPIRE(roomString + "counter", 320);
+    await redis.EXPIRE(roomString + "counter", 200);
     res.redirect(`/room/${roomString}`);
 });
 
@@ -136,7 +136,7 @@ io.on("connection", (socket) => {
                 io.to(playerData.room).emit("end-game");
                 return;
             }
-            const questionFlag = Math.floor(Math.random() * 48);
+            const questionFlag = Math.floor(Math.random() * 36);
 
             setTimeout(() => {
                 io.to(playerData.room).emit("question", {

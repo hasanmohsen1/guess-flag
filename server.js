@@ -1,6 +1,7 @@
 const express = require("express");
 const socketIO = require("socket.io");
 const cryptoRandomString = require("crypto-random-string");
+const helmet = require("helmet");
 const redis = require("./redis.js");
 const flagsArr = require("./countriesflags.json");
 
@@ -13,6 +14,7 @@ const server = require("http").createServer(app);
 
 server.listen(process.env.PORT || 8080);
 
+app.use(helmet());
 app.use(express.static("public"));
 
 app.get("/", (request, response) => {

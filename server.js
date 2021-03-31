@@ -17,6 +17,9 @@ server.listen(process.env.PORT || 8080);
 app.use(
     helmet.contentSecurityPolicy({
         directives: {
+            "default-src": "self",
+            "font-src": ["self", "https://fonts.googleapis.com/"],
+            styleSrc: ["'self'", "fonts.googleapis.com"],
             "img-src": ["'self'", "https://restcountries.eu/"],
         },
     })

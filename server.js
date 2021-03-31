@@ -17,11 +17,12 @@ server.listen(process.env.PORT || 8080);
 app.use(
     helmet.contentSecurityPolicy({
         directives: {
-            "default-src": ["self", "script-src-elem"],
-            "script-src": "self",
-            "font-src": ["self", "fonts.googleapis.com", "fonts.gstatic.com"],
+            defaultSrc: ["self", "script-src-elem"],
+            scriptSrc: "self",
+            fontSrc: ["self", "fonts.googleapis.com", "fonts.gstatic.com"],
             styleSrc: ["'self'", "fonts.googleapis.com", "fonts.gstatic.com"],
             "img-src": ["'self'", "https://restcountries.eu/"],
+            "connect-src": "'self'",
         },
     })
 );

@@ -18,8 +18,8 @@ app.use(
     helmet.contentSecurityPolicy({
         directives: {
             "default-src": "self",
-            "font-src": ["self", "fonts.googleapis.com"],
-            styleSrc: ["'self'", "fonts.googleapis.com"],
+            "font-src": ["self", "fonts.googleapis.com", "fonts.gstatic.com"],
+            styleSrc: ["'self'", "fonts.googleapis.com", "fonts.gstatic.com"],
             "img-src": ["'self'", "https://restcountries.eu/"],
         },
     })

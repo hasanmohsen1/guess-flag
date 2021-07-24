@@ -2,8 +2,8 @@
 
 # Draw & Guess
 
-Project to demonstrate how Socket.io works. One of my favourite encounters!
-Multiplayer game for guessing flags.
+Project to demonstrate how Socket.io works. One of my favourite encounters!\
+Multiplayer game for guessing flags.\
 Socket.io rooms, Redis for caching game data for each room.
 
 ## Tech Stack:

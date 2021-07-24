@@ -1,6 +1,6 @@
 # Socket.io (Encounter)
 
-# Draw & Guess
+# Guess Flag! 🚩🏳‍🌈🏴‍☠️🏁
 
 Project to demonstrate how Socket.io works. One of my favourite encounters!\
 Multiplayer game for guessing flags.\
@@ -18,4 +18,4 @@ Socket.io rooms, Redis for caching game data for each room.
 
 ## Preview
 
-![GuessFlag](draw_guess.JPG)
+![GuessFlag](guess_flag.JPG)

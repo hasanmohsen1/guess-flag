@@ -21,7 +21,7 @@ app.use(
             scriptSrc: ["'self'"],
             fontSrc: ["self", "fonts.googleapis.com", "fonts.gstatic.com"],
             styleSrc: ["'self'", "fonts.googleapis.com", "fonts.gstatic.com"],
-            "img-src": ["'self'", "https://restcountries.eu/"],
+            "img-src": ["'self'", "https://restcountries.eu/", "data:"],
             "connect-src": "'self'",
         },
     })

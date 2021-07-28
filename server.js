@@ -15,32 +15,27 @@ const server = require("http").createServer(app);
 server.listen(process.env.PORT || 8080);
 
 app.use(
-    helmet({
-        contentSecurityPolicy: false,
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            fontSrc: ["self", "fonts.googleapis.com", "fonts.gstatic.com"],
+            styleSrc: ["'self'", "fonts.googleapis.com", "fonts.gstatic.com"],
+            "img-src": ["'self'", "https://restcountries.eu/"],
+            "connect-src": "'self'",
+        },
     })
 );
-// app.use(
-//     helmet.contentSecurityPolicy({
-//         directives: {
-//             defaultSrc: ["self", "script-src-elem"],
-//             scriptSrc: "self",
-//             fontSrc: ["self", "fonts.googleapis.com", "fonts.gstatic.com"],
-//             styleSrc: ["'self'", "fonts.googleapis.com", "fonts.gstatic.com"],
-//             "img-src": ["'self'", "https://restcountries.eu/"],
-//             "connect-src": "'self'",
-//         },
-//     })
-// );
-// app.use(helmet.dnsPrefetchControl());
-// app.use(helmet.expectCt());
-// app.use(helmet.frameguard());
-// app.use(helmet.hidePoweredBy());
-// app.use(helmet.hsts());
-// app.use(helmet.ieNoOpen());
-// app.use(helmet.noSniff());
-// app.use(helmet.permittedCrossDomainPolicies());
-// app.use(helmet.referrerPolicy());
-// app.use(helmet.xssFilter());
+app.use(helmet.dnsPrefetchControl());
+app.use(helmet.expectCt());
+app.use(helmet.frameguard());
+app.use(helmet.hidePoweredBy());
+app.use(helmet.hsts());
+app.use(helmet.ieNoOpen());
+app.use(helmet.noSniff());
+app.use(helmet.permittedCrossDomainPolicies());
+app.use(helmet.referrerPolicy());
+app.use(helmet.xssFilter());
 
 app.use(express.static("public"));
 
@@ -99,6 +94,7 @@ io.on("connection", (socket) => {
             socket.emit("new-player-arrived-later", await flags);
         }
 
+        io.emit("player-joined", io.sockets.adapter.rooms.get(room).size);
         playerData.room = room;
         playerData.emoji = emojis[io.sockets.adapter.rooms.get(room).size - 1];
         socket.emit("send-player-emoji", playerData);

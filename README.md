@@ -4,7 +4,9 @@
 
 Project to demonstrate how Socket.io works. One of my favourite encounters!\
 Multiplayer game for guessing flags.\
-Socket.io rooms, Redis for caching game data for each room.
+Socket.io rooms, Redis for caching game data for each room.\
+
+One round of the game lasts 3 minutes. The correct flag is marked if the answer is wrong. 10 seconds Countdown to answer a question. Participating players are marked by emojis. Players can also join while the game is still in progress. Room player limit size: 10.
 
 ## Tech Stack:
 

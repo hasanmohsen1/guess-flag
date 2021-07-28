@@ -12,16 +12,21 @@
         <link href="/styles.css" rel="stylesheet" />
         <title>COUNTRIES QUIZ</title>
     </head>
-    <body>
-        <h1>🏴‍☠️ 🌍 CHECK YOUR KNOWLEDGE ! PICK THE RIGHT FLAG ? 🌎 🏳</h1>
+    <body id="room-page">
         <header>
+            <h1>PICK THE RIGHT FLAG ? 🌎 🏳</h1>
+        </header>
+        <section id="wait-section">
             <div class="h4-container">
                 <h4>Wait for players or play SOLO ???</h4>
                 <h4>Send this url to friends:</h4>
                 <textarea id="room-url"></textarea>
             </div>
-            <button id="start-button">CLICK & START !!!</button>
-        </header>
+            <button id="start-button">
+                <span></span>
+                <div>START ?!?</div>
+            </button>
+        </section>
         <p id="timer"></p>
         <main></main>
         <section id="player-points"></section>

@@ -37,7 +37,8 @@
             },
             { once: true }
         );
-        document.body.style.cursor = startButton.style.cursor = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='60' viewport='0 0 100 100' style='fill:black;font-size:30px;'><text y='50%'>${data.emoji}</text></svg>") 16 0, auto`;
+        document.body.style.cursor =
+            startButton.style.cursor = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='60' viewport='0 0 100 100' style='fill:black;font-size:30px;'><text y='50%'>${data.emoji}</text></svg>") 16 0, auto`;
         document.addEventListener("mousemove", function (e) {
             socket.emit("player-mouse-position", {
                 ...data,
@@ -45,6 +46,10 @@
                 y: e.pageY,
             });
         });
+    });
+
+    socket.on("player-joined", (data) => {
+        startButton.children[0].textContent = `Current players: ${data}`;
     });
 
     socket.on("player-mouse-position", (data) => {
@@ -123,6 +128,7 @@
         main.prepend(country);
         country.innerHTML = allFlags[data.questionFlag].name;
         correctFlag = data.index;
+        timerCountdown.style.visibility = "visible";
 
         timeoutId = setTimeout(() => {
             clicked = true;

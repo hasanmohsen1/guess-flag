@@ -20,4 +20,4 @@ One round of the game lasts 3 minutes. The correct flag is marked if the answer 
 
 ## Preview
 
-![GuessFlag](guess_flag.JPG)
+![GuessFlag](guess_flag.png)

@@ -4,6 +4,7 @@ const cryptoRandomString = require("crypto-random-string");
 const helmet = require("helmet");
 const redis = require("./redis.js");
 const flagsArr = require("./countriesflags.json");
+const axios = require("axios");
 
 // prettier-ignore
 const emojis = ['🐸','🐱','🦊', '🐻', '🐼', '🐨', '🐙', '🦁','🐹', '🐰'];
@@ -19,13 +20,14 @@ app.use(
         directives: {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'"],
-            fontSrc: ["self", "fonts.googleapis.com", "fonts.gstatic.com"],
+            fontSrc: ["'self'", "fonts.googleapis.com", "fonts.gstatic.com"],
             styleSrc: ["'self'", "fonts.googleapis.com", "fonts.gstatic.com"],
-            "img-src": ["'self'", "https://restcountries.eu/", "data:"],
+            "img-src": ["'self'", "https://restcountries.com/", "data:"],
             "connect-src": "'self'",
         },
     })
 );
+
 app.use(helmet.dnsPrefetchControl());
 app.use(helmet.expectCt());
 app.use(helmet.frameguard());
@@ -46,9 +48,16 @@ app.get("/", (request, response) => {
 app.post("/create", async (req, res) => {
     const roomString = cryptoRandomString(8);
 
-    const randomFlags = JSON.stringify(
-        flagsArr.sort(() => Math.random() - 0.5).slice(0, 36)
+    async function fetchRandomFlags() {
+    const countries = ["faroe", "denmark", "sweden", "norway", "iceland"]; // Add more names as needed
+    const promises = countries.map((name) =>
+        axios.get(`https://restcountries.com/v3.1/name/${name}`)
     );
+
+    const responses = await Promise.all(promises);
+    const flags = responses.map((res) => res.data[0].flags.svg); // Extract flag URLs
+    return flags.sort(() => Math.random() - 0.5).slice(0, 36);
+    }
     const questionFlag = Math.floor(Math.random() * 36);
     await redis.HMSET(
         roomString,

@@ -48,17 +48,9 @@ app.get("/", (request, response) => {
 app.post("/create", async (req, res) => {
     const roomString = cryptoRandomString(8);
 
-    async function fetchRandomFlags() {
-    const countries = ["faroe", "denmark", "sweden", "norway", "iceland"]; // Add more names as needed
-    const promises = countries.map((name) =>
-        axios.get(`https://restcountries.com/v3.1/name/${name}`)
-    );
-
-    const responses = await Promise.all(promises);
-    const flags = responses.map((res) => res.data[0].flags.svg); // Extract flag URLs
-    return flags.sort(() => Math.random() - 0.5).slice(0, 36);
-    }
+    const randomFlags = JSON.stringify(await fetchRandomFlags());
     const questionFlag = Math.floor(Math.random() * 36);
+
     await redis.HMSET(
         roomString,
         "flags",

@@ -1,14 +1,14 @@
 const redis = require("redis");
 const { promisify } = require("util");
 
-const redisConfig = {
-    url: process.env.REDIS_URL || "redis://127.0.0.1:6379"
-};
+const redisUrl = process.env.STACKHERO_REDIS_URL_TLS || "redis://127.0.0.1:6379";
 
-const client = redis.createClient(redisConfig);
+const client = redis.createClient({
+    url: redisUrl,
+});
 
 client.on("error", function (error) {
-    console.log("redis", error);
+    console.error("Redis error:", error);
 });
 
 module.exports.GET = promisify(client.GET).bind(client);
